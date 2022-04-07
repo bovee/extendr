@@ -69,10 +69,6 @@ impl Ownership {
     }
 
     unsafe fn protect(&mut self, sexp: SEXP) {
-        if self.cur_index == self.max_index {
-            self.garbage_collect();
-        }
-
         let sexp_usize = sexp as usize;
         let Ownership {
             ref mut preservation,
@@ -99,6 +95,10 @@ impl Ownership {
                 let refcount = 1;
                 vacant.insert(Object { refcount, index });
             }
+        }
+
+        if self.cur_index == self.max_index - 1 {
+            self.garbage_collect();
         }
     }
 
